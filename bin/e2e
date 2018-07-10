@@ -1,0 +1,5 @@
+#!/usr/bin/env sh
+set -e
+
+rake
+ruby e2e/e2e.rb

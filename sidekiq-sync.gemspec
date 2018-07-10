@@ -1,7 +1,7 @@
 
 lib = File.expand_path("../lib", __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require "sidekiq/sync/version"
+require_relative "lib/sidekiq/sync/version"
 
 Gem::Specification.new do |spec|
   spec.name          = "sidekiq-sync"
@@ -21,14 +21,13 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^exe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "redis", "4.0.1", "~> 4.0"
   spec.add_dependency "sidekiq", "5.1.3", "~> 5.1"
 
   spec.add_development_dependency "bundler", "~> 1.16"
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "rspec", "~> 3.0"
-
   spec.add_development_dependency "guard", "2.14.2", "~> 2.14"
   spec.add_development_dependency "guard-sidekiq", "0.1.0", "~> 0.1"
   spec.add_development_dependency "guard-rspec", "4.7.3", "~> 4.7"
+  spec.add_development_dependency "kommando", "0.1.2", "~> 0.1"
 end

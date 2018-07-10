@@ -1,39 +1,39 @@
-# Sidekiq::Sync
+# sidekiq-sync
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/sidekiq/sync`. To experiment with that code, run `bin/console` for an interactive prompt.
+Adds `perform_sync` to Sidekiq to get return value from perform while still executing through Sidekiq (distributed workers!). Internally it stores the result in a unique queue that is polled.
 
-TODO: Delete this and the text above, and describe your gem
+## Usage:
 
-## Installation
-
-Add this line to your application's Gemfile:
-
-```ruby
-gem 'sidekiq-sync'
 ```
+class HardWorker
+  include Sidekiq::Sync::Worker
 
-And then execute:
+  def perform(how_hard="super hard", how_long=1)
+    puts "working #{how_hard}"
+    sleep how_long
+    "I worked #{how_hard}"
+  end
+end
 
-    $ bundle
+puts HardWorker.perform_sync("really hard")
+# outputs "I worked really hard"
 
-Or install it yourself as:
+puts HardWorker.perform_async("really hard")
+# outputs the sidekiq job..
 
-    $ gem install sidekiq-sync
+options = Sidekiq::Sync::Options.new(timeout: 3)
+puts HardWorker.perform_sync(options, "really hard", 4)
+# times out in 3 seconds and raises Sidekiq::Sync::TimeoutError
 
-## Usage
+options = Sidekiq::Sync::Options.new(timeout: 3, raise: false)
+puts HardWorker.perform_sync(options, "really hard", 4)
+# times out in 3 seconds, returns nil, does not raise
 
-TODO: Write usage instructions here
+options = Sidekiq::Sync::Options.new(timeout: 3, raise: false)
+puts HardWorker.perform_sync(options, "really hard", 4)
+# times out in 3 seconds, returns nil, does not raise
 
-## Development
-
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
-
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
-
-## Contributing
-
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/sidekiq-sync.
-
-## License
-
-The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+options = Sidekiq::Sync::Options.new(timeout: 3, raise: false)
+puts HardWorker.perform_sync("really hard", options, 4)
+# options can be wherever you wish (still sleeps 4, timeouts in 3 and does not raise)
+```

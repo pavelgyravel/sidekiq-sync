@@ -24,6 +24,7 @@
 #  - :environment (corresponds to RAILS_ENV for the Sidekiq worker)
 guard 'sidekiq', :environment => 'development', require: './spec/workers/*.rb' do
   watch(%r{spec/workers/(.+)\.rb$})
+  watch(%r{lib/sidekiq/sync/(.+)\.rb$})
 end
 
 # Note: The cmd option is now required due to the increasing number of ways
@@ -34,8 +35,7 @@ end
 #                          installed the spring binstubs per the docs)
 #  * zeus: 'zeus rspec' (requires the server to be started separately)
 #  * 'just' rspec: 'rspec'
-
-guard :rspec, cmd: "bundle exec rspec" do
+guard :rspec, cmd: "GUARD_ACTIVE=true bundle exec rspec", all_on_start: true, all_after_pass: true do
   require "guard/rspec/dsl"
   dsl = Guard::RSpec::Dsl.new(self)
 

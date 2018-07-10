@@ -2,7 +2,13 @@
 
 Adds `perform_sync` to Sidekiq to get the return value from perform while still executing through Sidekiq (distributed workers!). Internally it stores the result in a unique queue that is polled.
 
-## Usage:
+## install
+
+```
+gem install 'sidekiq-sync'
+```
+
+## usage
 
 ```
 class HardWorker
